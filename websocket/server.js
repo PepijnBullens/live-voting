@@ -39,8 +39,8 @@ io.on("connection", (socket) => {
     const members = getMembers(await io.in(room).fetchSockets());
     io.to(room).emit("list-members", members);
 
-    socket.emit("list-answers", rooms[room].answers);
-    socket.emit("list-question", rooms[room].question);
+    socket.emit("list-answers", rooms[room].answers || []);
+    socket.emit("list-question", rooms[room].question || []);
 
     console.log(`User: ${socket.id}/${username} joined room: ${room}`);
   });
@@ -72,6 +72,8 @@ io.on("connection", (socket) => {
 
     if (rooms[room] && rooms[room].admin && socket.id == rooms[room].admin) {
       io.to(room).emit("admin-left");
+      const sockets = await io.in(room).fetchSockets();
+      sockets.forEach((socket) => socket.leave(room));
       delete rooms[room];
     }
 
@@ -91,6 +93,8 @@ io.on("connection", (socket) => {
         socket.id == rooms[socket.room].admin
       ) {
         io.to(socket.room).emit("admin-left");
+        const sockets = await io.in(socket.room).fetchSockets();
+        sockets.forEach((socket) => socket.leave(socket.room));
         delete rooms[socket.room];
       }
 

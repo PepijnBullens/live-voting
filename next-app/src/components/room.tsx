@@ -67,6 +67,7 @@ export default function Room({
   const createNewAnswer = () => {
     if (newAnswer === "") return;
     socket.emit("anwsers-update", newAnswer);
+    setNewAnswer("");
   };
 
   const removeAnswer = (id: string) => {
@@ -108,6 +109,7 @@ export default function Room({
               type="text"
               name="newAnswer"
               id="newAnswer"
+              value={newAnswer || ""}
               onChange={(e) => setNewAnswer(e.target.value)}
             />
             <button onClick={createNewAnswer}>New Answer</button>
