@@ -23,6 +23,11 @@ io.on("connection", (socket) => {
       return;
     }
 
+    if (rooms[room] && rooms[room].started && rooms[room].started === true) {
+      socket.emit("error", "Room is closed");
+      return;
+    }
+
     const isRoomAdmin = roomExists.length === 0;
 
     socket.username = username;
@@ -33,7 +38,12 @@ io.on("connection", (socket) => {
 
     if (isRoomAdmin) {
       socket.emit("room-admin");
-      rooms[room] = { answers: [], question: null, admin: socket.id };
+      rooms[room] = {
+        answers: [],
+        question: null,
+        admin: socket.id,
+        started: false,
+      };
     }
 
     const members = getMembers(await io.in(room).fetchSockets());
@@ -46,38 +56,59 @@ io.on("connection", (socket) => {
   });
 
   socket.on("answer-remove", (id) => {
+    if (rooms[socket.room].started === true) return;
+
     rooms[socket.room].answers = rooms[socket.room].answers.filter(
       (_answer) => _answer.id !== id
     );
     io.to(socket.room).emit("list-answers", rooms[socket.room].answers);
   });
 
-  socket.on("anwsers-update", (answer) => {
+  socket.on("room-start", () => {
+    if (socket.id !== rooms[socket.room].admin) return;
+
+    rooms[socket.room].started = true;
+    io.to(socket.room).emit("room-started");
+
+    console.log(`Room: ${socket.room} has started`);
+  });
+
+  socket.on("answers-update", (answer) => {
+    if (rooms[socket.room].started === true) return;
+
     const newAnswer = { id: nanoid(), content: answer, votes: 0 };
     rooms[socket.room].answers.push(newAnswer);
     io.to(socket.room).emit("list-answers", rooms[socket.room].answers);
   });
 
   socket.on("question-update", (question) => {
+    if (rooms[socket.room].started === true) return;
+
+    console.log(rooms[socket.room].started);
+
     rooms[socket.room].question = question;
     io.to(socket.room).emit("list-question", question);
   });
 
-  socket.on("leave-room", async (room) => {
+  socket.on("leave-room", async () => {
     socket.emit("left-room");
-    socket.leave(room);
+    socket.leave(socket.room);
 
-    const members = getMembers(await io.in(room).fetchSockets());
-    io.to(room).emit("list-members", members);
+    const members = getMembers(await io.in(socket.room).fetchSockets());
+    io.to(socket.room).emit("list-members", members);
 
-    if (rooms[room] && rooms[room].admin && socket.id == rooms[room].admin) {
-      io.to(room).emit("admin-left");
-      const sockets = await io.in(room).fetchSockets();
-      sockets.forEach((socket) => socket.leave(room));
-      delete rooms[room];
+    if (
+      rooms[socket.room] &&
+      rooms[socket.room].admin &&
+      socket.id == rooms[socket.room].admin
+    ) {
+      io.to(socket.room).emit("admin-left");
+      const sockets = await io.in(socket.room).fetchSockets();
+      sockets.forEach((socket) => socket.leave(socket.room));
+      delete rooms[socket.room];
     }
 
-    console.log(`User: ${socket.id} left room: ${room}`);
+    console.log(`User: ${socket.id} left room: ${socket.room}`);
   });
 
   socket.on("disconnect", async () => {

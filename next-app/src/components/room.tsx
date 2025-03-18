@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Socket } from "socket.io-client";
-import { Delete } from "lucide-react";
+import AdminStarted from "./room-states/admin-started";
+import AdminStarting from "./room-states/admin-starting";
+import GuestStarted from "./room-states/guest-started";
 
 interface Member {
   id: string;
@@ -26,15 +28,38 @@ export default function Room({
 }) {
   const [members, setMembers] = useState<Member[] | null>(null);
   const [admin, setAdmin] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const [question, setQuestion] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Answer[]>([]);
 
   const [newAnswer, setNewAnswer] = useState("");
 
+  // ----------------- WEBSOCKET TO
+
   const leaveRoom = () => {
-    socket.emit("leave-room", room);
+    socket.emit("leave-room");
   };
+
+  const startRoom = () => {
+    socket.emit("room-start");
+  };
+
+  const updateQuestion = (question: string) => {
+    socket.emit("question-update", question);
+  };
+
+  const createNewAnswer = () => {
+    if (newAnswer === "") return;
+    socket.emit("answers-update", newAnswer);
+    setNewAnswer("");
+  };
+
+  const removeAnswer = (id: string) => {
+    socket.emit("answer-remove", id);
+  };
+
+  // ----------------- WEBSOCKET FROM
 
   socket.on("left-room", () => {
     setRoom("");
@@ -60,19 +85,9 @@ export default function Room({
     setRoom("");
   });
 
-  const updateQuestion = (question: string) => {
-    socket.emit("question-update", question);
-  };
-
-  const createNewAnswer = () => {
-    if (newAnswer === "") return;
-    socket.emit("anwsers-update", newAnswer);
-    setNewAnswer("");
-  };
-
-  const removeAnswer = (id: string) => {
-    socket.emit("answer-remove", id);
-  };
+  socket.on("room-started", () => {
+    setStarted(true);
+  });
 
   return (
     <>
@@ -87,45 +102,24 @@ export default function Room({
       </div>
       <div>
         {admin ? (
-          <>
-            <input
-              type="text"
-              name="question"
-              id="question"
-              value={question || ""}
-              placeholder="question"
-              onChange={(e) => updateQuestion(e.target.value)}
+          started ? (
+            <AdminStarted answers={answers} question={question} />
+          ) : (
+            <AdminStarting
+              question={question}
+              updateQuestion={updateQuestion}
+              answers={answers}
+              removeAnswer={removeAnswer}
+              newAnswer={newAnswer}
+              setNewAnswer={setNewAnswer}
+              createNewAnswer={createNewAnswer}
+              startRoom={startRoom}
             />
-            <div>
-              {answers?.map((answer) => (
-                <div key={answer.id}>
-                  {answer.content}
-                  {answer.votes}
-                  <Delete onClick={() => removeAnswer(answer.id)} />
-                </div>
-              ))}
-            </div>
-            <input
-              type="text"
-              name="newAnswer"
-              id="newAnswer"
-              value={newAnswer || ""}
-              onChange={(e) => setNewAnswer(e.target.value)}
-            />
-            <button onClick={createNewAnswer}>New Answer</button>
-          </>
+          )
+        ) : started ? (
+          <GuestStarted answers={answers} question={question} />
         ) : (
-          <>
-            <div>
-              {answers?.map((answer) => (
-                <div key={answer.id}>
-                  {answer.content}
-                  {answer.votes}
-                </div>
-              ))}
-            </div>
-            <p>{question}</p>
-          </>
+          <div>Room is being set up. Wait for the admin to start.</div>
         )}
       </div>
     </>
