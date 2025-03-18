@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "nanoid": "^5.1.4",
     "nodemon": "^3.1.9",
     "socket.io": "^4.8.1"
   }
