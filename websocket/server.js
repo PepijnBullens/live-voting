@@ -12,14 +12,21 @@ const getMembers = (members) => {
 };
 
 io.on("connection", (socket) => {
-  socket.on("join-room", async (room, username) => {
+  socket.on("join-room", async (room, username, password) => {
+    const roomExists = await io.in(room).fetchSockets();
+    if (roomExists.length > 0 && roomExists[0].password !== password) {
+      socket.emit("error", "Incorrect room password");
+      return;
+    }
+
     socket.username = username;
-    socket.room = room; // Store the room for later use
+    socket.room = room;
+    socket.password = password;
     socket.join(room);
     socket.emit("joined-room", room);
 
     const members = getMembers(await io.in(room).fetchSockets());
-    io.to(room).emit("list-members", members); // Update all clients
+    io.to(room).emit("list-members", members);
 
     console.log(`User: ${socket.id}/${username} joined room: ${room}`);
   });
