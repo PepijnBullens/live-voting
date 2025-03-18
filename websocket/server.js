@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("leave-room", async (room) => {
-    io.to(room).emit("left-room");
+    socket.emit("left-room");
     socket.leave(room);
 
     const members = getMembers(await io.in(room).fetchSockets());
