@@ -1,12 +1,18 @@
 import { Delete } from "lucide-react";
+import { useEffect } from "react";
+
+interface Vote {
+  id: string;
+}
 
 interface Answer {
   id: string;
   content: string;
-  votes: number;
+  percentage: number;
+  votes: Vote[];
 }
 
-export default function AdminStarting({
+export default function Starting({
   question,
   updateQuestion,
   answers,
@@ -15,6 +21,7 @@ export default function AdminStarting({
   setNewAnswer,
   createNewAnswer,
   startRoom,
+  admin,
 }: {
   question: string | null;
   updateQuestion: (question: string) => void;
@@ -24,8 +31,9 @@ export default function AdminStarting({
   setNewAnswer: (id: string) => void;
   createNewAnswer: () => void;
   startRoom: () => void;
+  admin: boolean;
 }) {
-  return (
+  return admin ? (
     <>
       <input
         type="text"
@@ -39,7 +47,7 @@ export default function AdminStarting({
         {answers?.map((answer) => (
           <div key={answer.id}>
             {answer.content}
-            {answer.votes}
+            {answer.percentage}
             <Delete onClick={() => removeAnswer(answer.id)} />
           </div>
         ))}
@@ -53,6 +61,11 @@ export default function AdminStarting({
       />
       <button onClick={createNewAnswer}>New Answer</button>
       <button onClick={startRoom}>Start Game</button>
+    </>
+  ) : (
+    <>
+      <p>The admin is setting up the room.</p>
+      <p>{question}</p>
     </>
   );
 }

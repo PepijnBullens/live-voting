@@ -2,18 +2,24 @@
 
 import { useState } from "react";
 import { Socket } from "socket.io-client";
-import AdminStarting from "./room-states/admin-starting";
+import Starting from "./room-states/starting";
 import Started from "./room-states/started";
+import Ended from "./room-states/ended";
 
 interface Member {
   id: string;
   username: string;
 }
 
+interface Vote {
+  id: string;
+}
+
 interface Answer {
   id: string;
   content: string;
-  votes: number;
+  percentage: number;
+  votes: Vote[];
 }
 
 export default function Room({
@@ -27,10 +33,17 @@ export default function Room({
 }) {
   const [members, setMembers] = useState<Member[] | null>(null);
   const [admin, setAdmin] = useState(false);
+
   const [started, setStarted] = useState(false);
+
+  const [ended, setEnded] = useState(false);
+  const [canEnd, setCanEnd] = useState(false);
 
   const [question, setQuestion] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Answer[]>([]);
+
+  const [result, setResult] = useState<Answer | null>(null);
+  const [draw, setDraw] = useState(false);
 
   const [newAnswer, setNewAnswer] = useState("");
 
@@ -56,6 +69,14 @@ export default function Room({
 
   const removeAnswer = (id: string) => {
     socket.emit("answer-remove", id);
+  };
+
+  const vote = (id: string) => {
+    socket.emit("vote", id);
+  };
+
+  const endVoting = () => {
+    socket.emit("voting-end");
   };
 
   // ----------------- WEBSOCKET FROM
@@ -88,6 +109,19 @@ export default function Room({
     setStarted(true);
   });
 
+  socket.on("voting-ended", (_result, _draw) => {
+    setEnded(true);
+    setStarted(false);
+    console.log(_result);
+
+    setResult(_result);
+    setDraw(_draw);
+  });
+
+  socket.on("can-end", (_canEnd) => {
+    setCanEnd(_canEnd);
+  });
+
   return (
     <>
       <div>
@@ -100,10 +134,18 @@ export default function Room({
         </ul>
       </div>
       <div>
-        {started ? (
-          <Started answers={answers} question={question} />
-        ) : admin ? (
-          <AdminStarting
+        {started && (
+          <Started
+            answers={answers}
+            question={question}
+            vote={vote}
+            endVoting={endVoting}
+            admin={admin}
+            canEnd={canEnd}
+          />
+        )}
+        {!started && !ended && (
+          <Starting
             question={question}
             updateQuestion={updateQuestion}
             answers={answers}
@@ -112,13 +154,10 @@ export default function Room({
             setNewAnswer={setNewAnswer}
             createNewAnswer={createNewAnswer}
             startRoom={startRoom}
+            admin={admin}
           />
-        ) : (
-          <>
-            <div>Room is being set up. Wait for the admin to start.</div>
-            <p>{question}</p>
-          </>
         )}
+        {!started && ended && <Ended result={result} draw={draw} />}
       </div>
     </>
   );
