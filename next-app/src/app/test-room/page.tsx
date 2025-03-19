@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
-import JoinRoom from "@/components/join-room";
+import TestRoom from "@/components/test-room";
 import Room from "@/components/room";
 
 export const socket = io("http://localhost:3010");
@@ -43,7 +43,7 @@ export default function Websocket() {
 
   return isConnected ? (
     !room ? (
-      <JoinRoom socket={socket} setRoom={setRoom} rooms={rooms} />
+      <TestRoom socket={socket} setRoom={setRoom} />
     ) : (
       <Room socket={socket} room={room} setRoom={setRoom} />
     )

@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
-input {
-  border: 2px solid black;
+@font-face {
+  font-family: GeneralSans;
+  src: url("../fonts/GeneralSans-Variable.ttf");
+}
+
+@layer base {
+  * {
+    font-family: GeneralSans;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
 }
