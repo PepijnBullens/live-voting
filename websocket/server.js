@@ -58,12 +58,15 @@ const rooms = {};
 io.on("connection", (socket) => {
   socket.on("join-room", async (room, username, password) => {
     const roomExists = await io.in(room).fetchSockets();
+
+    // Password check
     if (roomExists.length > 0 && roomExists[0].password !== password) {
       socket.emit("error", "Incorrect room password");
       return;
     }
 
-    if (rooms[room] && rooms[room].started && rooms[room].started === true) {
+    // Check if room is already started
+    if (rooms[room] && rooms[room].started) {
       socket.emit("error", "Room is closed");
       return;
     }
@@ -73,32 +76,31 @@ io.on("connection", (socket) => {
     socket.username = username;
     socket.password = password;
     socket.room = room;
-
     socket.join(room);
     socket.emit("joined-room", room);
 
     const clients = await io.in(room).fetchSockets();
+    const members = getMembers(clients);
+    io.to(room).emit("list-members", members);
 
-    if (clients) {
-      const members = getMembers(clients);
-      io.to(room).emit("list-members", members);
+    if (isRoomAdmin) {
+      rooms[room] = {
+        answers: [],
+        question: null,
+        admin: socket.id,
+        started: false,
+        password: password,
+      };
 
-      if (isRoomAdmin) {
-        socket.emit("room-admin");
-        rooms[room] = {
-          answers: [],
-          question: null,
-          admin: socket.id,
-          started: false,
-          password: password,
-        };
-      }
-
-      socket.emit("list-answers", rooms[room].answers || []);
-      socket.emit("list-question", rooms[room].question || []);
-
-      console.log(`User: ${socket.id}/${username} joined room: ${room}`);
+      socket.emit("room-admin");
+    } else {
+      io.to(rooms[room].admin).emit("room-admin");
     }
+
+    socket.emit("list-answers", rooms[room].answers || []);
+    socket.emit("list-question", rooms[room].question || []);
+
+    console.log(`User: ${socket.id}/${username} joined room: ${room}`);
   });
 
   socket.on("answer-remove", (id) => {
@@ -153,25 +155,28 @@ io.on("connection", (socket) => {
   });
 
   socket.on("leave-room", async () => {
+    if (!socket.room) return;
+
+    console.log(`User: ${socket.id} leaving room: ${socket.room}`);
+
+    socket.leave(socket.room);
+
     const clients = await io.in(socket.room).fetchSockets();
+    const members = getMembers(clients);
 
-    if (clients) {
-      const members = getMembers(clients);
-      io.to(socket.room).emit("list-members", members);
+    io.to(socket.room).emit("list-members", members);
 
-      if (
-        rooms[socket.room] &&
-        rooms[socket.room].admin &&
-        socket.id == rooms[socket.room].admin
-      ) {
-        io.to(socket.room).emit("admin-left");
-        const sockets = await io.in(socket.room).fetchSockets();
-        sockets.forEach((socket) => socket.leave(socket.room));
-        delete rooms[socket.room];
-      }
+    if (rooms[socket.room]?.admin === socket.id) {
+      io.to(socket.room).emit("admin-left");
 
-      console.log(`User: ${socket.id} left room: ${socket.room}`);
+      const sockets = await io.in(socket.room).fetchSockets();
+      sockets.forEach((s) => s.leave(socket.room));
+      delete rooms[socket.room];
     }
+
+    socket.emit("left-room");
+
+    delete socket.room;
   });
 
   socket.on("vote", async (id) => {
