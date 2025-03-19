@@ -31,8 +31,9 @@ io.on("connection", (socket) => {
     const isRoomAdmin = roomExists.length === 0;
 
     socket.username = username;
-    socket.room = room;
     socket.password = password;
+    socket.room = room;
+
     socket.join(room);
     socket.emit("joined-room", room);
 
@@ -43,6 +44,7 @@ io.on("connection", (socket) => {
         question: null,
         admin: socket.id,
         started: false,
+        password: password,
       };
     }
 
@@ -56,7 +58,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("answer-remove", (id) => {
-    if (rooms[socket.room].started === true) return;
+    if (
+      rooms[socket.room] &&
+      rooms[socket.room].started &&
+      rooms[socket.room].started === true
+    )
+      return;
 
     rooms[socket.room].answers = rooms[socket.room].answers.filter(
       (_answer) => _answer.id !== id
@@ -74,7 +81,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("answers-update", (answer) => {
-    if (rooms[socket.room].started === true) return;
+    if (
+      rooms[socket.room] &&
+      rooms[socket.room].started &&
+      rooms[socket.room].started === true
+    )
+      return;
 
     const newAnswer = { id: nanoid(), content: answer, votes: 0 };
     rooms[socket.room].answers.push(newAnswer);
@@ -82,7 +94,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("question-update", (question) => {
-    if (rooms[socket.room].started === true) return;
+    if (
+      rooms[socket.room] &&
+      rooms[socket.room].started &&
+      rooms[socket.room].started === true
+    )
+      return;
 
     console.log(rooms[socket.room].started);
 

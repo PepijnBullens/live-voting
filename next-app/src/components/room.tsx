@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { Socket } from "socket.io-client";
-import AdminStarted from "./room-states/admin-started";
 import AdminStarting from "./room-states/admin-starting";
-import GuestStarted from "./room-states/guest-started";
+import Started from "./room-states/started";
 
 interface Member {
   id: string;
@@ -101,25 +100,24 @@ export default function Room({
         </ul>
       </div>
       <div>
-        {admin ? (
-          started ? (
-            <AdminStarted answers={answers} question={question} />
-          ) : (
-            <AdminStarting
-              question={question}
-              updateQuestion={updateQuestion}
-              answers={answers}
-              removeAnswer={removeAnswer}
-              newAnswer={newAnswer}
-              setNewAnswer={setNewAnswer}
-              createNewAnswer={createNewAnswer}
-              startRoom={startRoom}
-            />
-          )
-        ) : started ? (
-          <GuestStarted answers={answers} question={question} />
+        {started ? (
+          <Started answers={answers} question={question} />
+        ) : admin ? (
+          <AdminStarting
+            question={question}
+            updateQuestion={updateQuestion}
+            answers={answers}
+            removeAnswer={removeAnswer}
+            newAnswer={newAnswer}
+            setNewAnswer={setNewAnswer}
+            createNewAnswer={createNewAnswer}
+            startRoom={startRoom}
+          />
         ) : (
-          <div>Room is being set up. Wait for the admin to start.</div>
+          <>
+            <div>Room is being set up. Wait for the admin to start.</div>
+            <p>{question}</p>
+          </>
         )}
       </div>
     </>
