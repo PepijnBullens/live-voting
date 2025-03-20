@@ -1,4 +1,5 @@
 import Logo from "@/components/logo";
+import { ToastContainer } from "react-toastify";
 import React from "react";
 
 export default function MainLayout({

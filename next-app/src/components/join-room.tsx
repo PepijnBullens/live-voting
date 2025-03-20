@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { Socket } from "socket.io-client";
 import SelectRoom from "@/components/aside/select-room";
 import CreateRoom from "@/components/aside/create-room";
+import { showToast } from "@/helpers/show-toast";
 
 interface Room {
   id: string;
@@ -35,8 +36,14 @@ export default function JoinRoom({
   });
 
   socket.on("error", (message) => {
-    setError(message);
+    if (message !== error) setError(message);
   });
+
+  useEffect(() => {
+    if (error === null) return;
+    showToast("error", <p>{error}</p>);
+    setError(null);
+  }, [error]);
 
   const joinRoom = () => {
     if (_room === "" || _room === null || username === "" || username === null)
