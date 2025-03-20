@@ -179,8 +179,10 @@ io.on("connection", (socket) => {
     if (clients.length === 0) {
       delete rooms[room];
     } else if (rooms[room].admin === socket.id) {
-      rooms[room].admin = clients[0].id;
-      io.to(room).emit("room-admin", rooms[room].admin);
+      clients.forEach((client) => {
+        client.leave(room);
+        client.emit("left-room");
+      });
     }
 
     socket.emit("left-room");
@@ -239,10 +241,12 @@ io.on("connection", (socket) => {
 
     const clients = await io.in(room).fetchSockets();
     if (clients.length === 0) {
-      delete rooms[room]; // Clear room if empty
+      delete rooms[room];
     } else if (rooms[room].admin === socket.id) {
-      rooms[room].admin = clients[0].id; // Assign a new admin
-      io.to(room).emit("room-admin", rooms[room].admin);
+      clients.forEach((client) => {
+        client.leave(room);
+        client.emit("left-room");
+      });
     }
 
     io.to(room).emit("list-members", getMembers(clients));
