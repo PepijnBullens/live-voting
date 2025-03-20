@@ -106,6 +106,7 @@ io.on("connection", (socket) => {
     io.to(room).emit("room-admin", rooms[room].admin);
     socket.emit("list-question", rooms[room].question);
     io.to(room).emit("list-question", rooms[room].question);
+    socket.emit("list-password", rooms[room].password);
 
     io.emit(
       "list-rooms",
@@ -153,7 +154,7 @@ io.on("connection", (socket) => {
 
     const newAnswer = { id: nanoid(), content: answer, votes: [] };
     rooms[socket.room].answers.push(newAnswer);
-    io.to(socket.room).emit("list-answers", returnAnswerPercentage(socket));
+    socket.emit("list-answers", returnAnswerPercentage(socket));
   });
 
   socket.on("question-update", (question) => {

@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import Starting from "./room-states/starting";
 import Started from "./room-states/started";
 import Ended from "./room-states/ended";
+import { showToast } from "@/helpers/show-toast";
 
 interface Member {
   id: string;
@@ -34,6 +35,8 @@ export default function Room({
   const [members, setMembers] = useState<Member[] | null>(null);
   const [admin, setAdmin] = useState(false);
 
+  const [password, setPassword] = useState<string | null>(null);
+
   const [started, setStarted] = useState(false);
 
   const [ended, setEnded] = useState(false);
@@ -62,7 +65,10 @@ export default function Room({
   };
 
   const createNewAnswer = () => {
-    if (newAnswer === "") return;
+    if (newAnswer === "") {
+      showToast("error", <p>Type in an option.</p>);
+      return;
+    }
     socket.emit("answers-update", newAnswer);
     setNewAnswer("");
   };
@@ -82,6 +88,10 @@ export default function Room({
   // ----------------- WEBSOCKET FROM
 
   useEffect(() => {
+    socket.on("list-password", (_password) => {
+      setPassword(_password);
+    });
+
     socket.on("left-room", () => {
       setRoom("");
     });
@@ -91,8 +101,6 @@ export default function Room({
     });
 
     socket.on("room-admin", (adminId) => {
-      console.log(adminId, socket.id);
-
       setAdmin(adminId === socket.id);
     });
 
@@ -101,6 +109,8 @@ export default function Room({
     });
 
     socket.on("list-answers", (answers) => {
+      console.log(answers);
+
       setAnswers(answers);
     });
 
@@ -124,6 +134,7 @@ export default function Room({
     });
 
     return () => {
+      socket.off("list-password");
       socket.off("left-room");
       socket.off("list-members");
       socket.off("room-admin");
@@ -136,6 +147,7 @@ export default function Room({
     };
   }, [
     socket,
+    setPassword,
     setRoom,
     setMembers,
     setAdmin,
@@ -150,7 +162,7 @@ export default function Room({
 
   return (
     <>
-      <div>
+      {/* <div>
         <h1>Room: {room}</h1>
         <button onClick={leaveRoom}>Leave Room</button>
 
@@ -158,7 +170,7 @@ export default function Room({
           {members &&
             members.map((member) => <li key={member.id}>{member.username}</li>)}
         </ul>
-      </div>
+      </div> */}
       <div>
         {started && (
           <Started
@@ -181,6 +193,8 @@ export default function Room({
             createNewAnswer={createNewAnswer}
             startRoom={startRoom}
             admin={admin}
+            leaveRoom={leaveRoom}
+            password={password}
           />
         )}
         {!started && ended && <Ended result={result} draw={draw} />}

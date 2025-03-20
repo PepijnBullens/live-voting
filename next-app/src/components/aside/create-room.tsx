@@ -46,8 +46,8 @@ export default function CreateRoom({
         <input
           className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
           type="password"
-          name="username"
-          id="username"
+          name="password"
+          id="password"
           placeholder="enter the password..."
           onChange={(e) => setPassword(e.target.value)}
         />
