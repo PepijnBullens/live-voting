@@ -5,6 +5,25 @@
   src: url("../fonts/GeneralSans-Variable.ttf");
 }
 
+/* Style all scrollbars */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #30323d;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(60, 63, 74);
+}
+
 @layer base {
   * {
     font-family: GeneralSans;

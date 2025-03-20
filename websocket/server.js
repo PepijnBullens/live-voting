@@ -94,16 +94,14 @@ io.on("connection", (socket) => {
         started: false,
         password: password || null,
       };
-
-      socket.emit("room-admin");
-    } else {
-      io.to(rooms[room].admin).emit("room-admin");
     }
+
+    io.to(room).emit("room-admin", rooms[room].admin);
 
     const clients = await io.in(socket.room).fetchSockets();
     const members = getMembers(clients);
 
-    io.to(socket.room).emit("list-members", members);
+    io.to(room).emit("list-members", members);
 
     io.emit(
       "list-rooms",
@@ -186,20 +184,20 @@ io.on("connection", (socket) => {
       const sockets = await io.in(socket.room).fetchSockets();
       sockets.forEach((s) => s.leave(socket.room));
       delete rooms[socket.room];
-
-      io.emit(
-        "list-rooms",
-        Object.keys(rooms).map((room) => ({
-          id: rooms[room].id,
-          name: room,
-          hasPassword: !!rooms[room].password,
-        }))
-      );
     }
 
     socket.emit("left-room");
 
     delete socket.room;
+
+    io.emit(
+      "list-rooms",
+      Object.keys(rooms).map((room) => ({
+        id: rooms[room].id,
+        name: room,
+        hasPassword: !!rooms[room].password,
+      }))
+    );
   });
 
   socket.on("vote", async (id) => {
@@ -255,6 +253,15 @@ io.on("connection", (socket) => {
           const sockets = await io.in(socket.room).fetchSockets();
           sockets.forEach((socket) => socket.leave(socket.room));
           delete rooms[socket.room];
+
+          io.emit(
+            "list-rooms",
+            Object.keys(rooms).map((room) => ({
+              id: rooms[room].id,
+              name: room,
+              hasPassword: !!rooms[room].password,
+            }))
+          );
         }
 
         console.log(

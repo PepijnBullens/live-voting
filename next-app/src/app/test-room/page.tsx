@@ -18,28 +18,6 @@ socket.on("disconnect", () => {
 export default function Websocket() {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [room, setRoom] = useState<string | null>(null);
-  const [rooms, setRooms] = useState<any>(null);
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      setIsConnected(true);
-    });
-
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-    };
-  }, []);
-
-  socket.on("list-rooms", (_rooms) => {
-    console.log(_rooms);
-
-    setRooms(_rooms);
-  });
 
   return isConnected ? (
     !room ? (

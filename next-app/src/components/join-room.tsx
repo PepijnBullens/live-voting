@@ -1,9 +1,11 @@
 "use client";
 
 import MainLayout from "@/layouts/main-layout";
-import Aside from "@/components/aside";
-import { useState } from "react";
+import Aside from "@/components/aside/aside";
+import { useEffect, useState } from "react";
 import type { Socket } from "socket.io-client";
+import SelectRoom from "@/components/aside/select-room";
+import CreateRoom from "@/components/aside/create-room";
 
 interface Room {
   id: string;
@@ -24,6 +26,8 @@ export default function JoinRoom({
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activeRoom, setActiveRoom] = useState<Room | null>(null);
+  const [selectingRoom, setSelectingRoom] = useState(true);
 
   socket.on("joined-room", (room) => {
     if (room === null) _setRoom("");
@@ -34,35 +38,44 @@ export default function JoinRoom({
     setError(message);
   });
 
-  const joinRoom = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (_room === "" || username === "" || password === "") return;
+  const joinRoom = () => {
+    if (_room === "" || _room === null || username === "" || username === null)
+      return;
     socket.emit("join-room", _room, username, password);
+  };
+
+  const changeActiveRoom = (room: Room) => {
+    if (activeRoom?.id === room.id) {
+      _setRoom(null);
+      setActiveRoom(null);
+    } else {
+      _setRoom(room.name);
+      setActiveRoom(room);
+    }
   };
 
   return (
     <MainLayout>
       <Aside>
-        <div>
-          <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-1">
-            join a room
-          </h2>
-          {rooms.map((room) => (
-            <div
-              className="w-full h-8 flex gap-2 items-center py-1"
-              key={room.id}
-            >
-              <div
-                className={`h-4 aspect-square rounded-full  ${
-                  room.hasPassword ? "bg-[#F25757]" : "bg-[#69DC9E]"
-                }`}
-              ></div>
-              <h3 className="uppercase font-semibold text-[#E5ECF4] overflow-ellipsis overflow-hidden">
-                {room.name}
-              </h3>
-            </div>
-          ))}
-        </div>
+        {selectingRoom ? (
+          <SelectRoom
+            rooms={rooms}
+            changeActiveRoom={changeActiveRoom}
+            activeRoom={activeRoom}
+            setSelectingRoom={setSelectingRoom}
+            joinRoom={joinRoom}
+            setUsername={setUsername}
+            setPassword={setPassword}
+          />
+        ) : (
+          <CreateRoom
+            setSelectingRoom={setSelectingRoom}
+            joinRoom={joinRoom}
+            _setRoom={_setRoom}
+            setUsername={setUsername}
+            setPassword={setPassword}
+          />
+        )}
       </Aside>
       <p className="w-1/2 text-[#4D5061] text-xl z-100 mix-blend-difference [font-size:_clamp(1rem,1.6vw,1.6rem)]">
         <span className="uppercase font-bold">pollparty</span> is a live-vote

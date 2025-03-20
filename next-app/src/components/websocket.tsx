@@ -29,17 +29,15 @@ export default function Websocket() {
       setIsConnected(false);
     });
 
+    socket.on("list-rooms", (_rooms) => {
+      setRooms(_rooms);
+    });
+
     return () => {
       socket.off("connect");
       socket.off("disconnect");
     };
   }, []);
-
-  socket.on("list-rooms", (_rooms) => {
-    console.log(_rooms);
-
-    setRooms(_rooms);
-  });
 
   return isConnected ? (
     !room ? (

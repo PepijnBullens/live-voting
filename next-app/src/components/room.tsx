@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import Starting from "./room-states/starting";
 import Started from "./room-states/started";
@@ -81,46 +81,72 @@ export default function Room({
 
   // ----------------- WEBSOCKET FROM
 
-  socket.on("left-room", () => {
-    setRoom("");
-  });
+  useEffect(() => {
+    socket.on("left-room", () => {
+      setRoom("");
+    });
 
-  socket.on("list-members", (members) => {
-    setMembers(members);
-  });
+    socket.on("list-members", (members) => {
+      setMembers(members);
+    });
 
-  socket.on("room-admin", () => {
-    setAdmin(true);
-  });
+    socket.on("room-admin", (adminId) => {
+      console.log(adminId, socket.id);
 
-  socket.on("list-question", (question) => {
-    setQuestion(question);
-  });
+      setAdmin(adminId === socket.id);
+    });
 
-  socket.on("list-answers", (answers) => {
-    setAnswers(answers);
-  });
+    socket.on("list-question", (question) => {
+      setQuestion(question);
+    });
 
-  socket.on("admin-left", () => {
-    setRoom("");
-  });
+    socket.on("list-answers", (answers) => {
+      setAnswers(answers);
+    });
 
-  socket.on("room-started", () => {
-    setStarted(true);
-  });
+    socket.on("admin-left", () => {
+      setRoom("");
+    });
 
-  socket.on("voting-ended", (_result, _draw) => {
-    setEnded(true);
-    setStarted(false);
-    console.log(_result);
+    socket.on("room-started", () => {
+      setStarted(true);
+    });
 
-    setResult(_result);
-    setDraw(_draw);
-  });
+    socket.on("voting-ended", (_result, _draw) => {
+      setEnded(true);
+      setStarted(false);
+      setResult(_result);
+      setDraw(_draw);
+    });
 
-  socket.on("can-end", (_canEnd) => {
-    setCanEnd(_canEnd);
-  });
+    socket.on("can-end", (_canEnd) => {
+      setCanEnd(_canEnd);
+    });
+
+    return () => {
+      socket.off("left-room");
+      socket.off("list-members");
+      socket.off("room-admin");
+      socket.off("list-question");
+      socket.off("list-answers");
+      socket.off("admin-left");
+      socket.off("room-started");
+      socket.off("voting-ended");
+      socket.off("can-end");
+    };
+  }, [
+    socket,
+    setRoom,
+    setMembers,
+    setAdmin,
+    setQuestion,
+    setAnswers,
+    setStarted,
+    setEnded,
+    setResult,
+    setDraw,
+    setCanEnd,
+  ]);
 
   return (
     <>
