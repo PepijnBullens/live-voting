@@ -16,7 +16,7 @@ interface Vote {
   id: string;
 }
 
-interface Answer {
+interface Option {
   id: string;
   content: string;
   percentage: number;
@@ -43,12 +43,12 @@ export default function Room({
   const [canEnd, setCanEnd] = useState(false);
 
   const [question, setQuestion] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [options, setOptions] = useState<Option[]>([]);
 
-  const [result, setResult] = useState<Answer | null>(null);
+  const [result, setResult] = useState<Option | null>(null);
   const [draw, setDraw] = useState(false);
 
-  const [newAnswer, setNewAnswer] = useState("");
+  const [newOption, setNewOption] = useState("");
 
   // ----------------- WEBSOCKET TO
 
@@ -64,17 +64,17 @@ export default function Room({
     socket.emit("question-update", question);
   };
 
-  const createNewAnswer = () => {
-    if (newAnswer === "") {
+  const createNewOption = () => {
+    if (newOption === "") {
       showToast("error", <p>Type in an option.</p>);
       return;
     }
-    socket.emit("answers-update", newAnswer);
-    setNewAnswer("");
+    socket.emit("options-update", newOption);
+    setNewOption("");
   };
 
-  const removeAnswer = (id: string) => {
-    socket.emit("answer-remove", id);
+  const removeOption = (id: string) => {
+    socket.emit("option-remove", id);
   };
 
   const vote = (id: string) => {
@@ -108,10 +108,8 @@ export default function Room({
       setQuestion(question);
     });
 
-    socket.on("list-answers", (answers) => {
-      console.log(answers);
-
-      setAnswers(answers);
+    socket.on("list-options", (_options) => {
+      setOptions(_options);
     });
 
     socket.on("admin-left", () => {
@@ -139,7 +137,7 @@ export default function Room({
       socket.off("list-members");
       socket.off("room-admin");
       socket.off("list-question");
-      socket.off("list-answers");
+      socket.off("list-options");
       socket.off("admin-left");
       socket.off("room-started");
       socket.off("voting-ended");
@@ -152,7 +150,7 @@ export default function Room({
     setMembers,
     setAdmin,
     setQuestion,
-    setAnswers,
+    setOptions,
     setStarted,
     setEnded,
     setResult,
@@ -174,7 +172,7 @@ export default function Room({
       <div>
         {started && (
           <Started
-            answers={answers}
+            options={options}
             question={question}
             vote={vote}
             endVoting={endVoting}
@@ -186,11 +184,11 @@ export default function Room({
           <Starting
             question={question}
             updateQuestion={updateQuestion}
-            answers={answers}
-            removeAnswer={removeAnswer}
-            newAnswer={newAnswer}
-            setNewAnswer={setNewAnswer}
-            createNewAnswer={createNewAnswer}
+            options={options}
+            removeOption={removeOption}
+            newOption={newOption}
+            setNewOption={setNewOption}
+            createNewOption={createNewOption}
             startRoom={startRoom}
             admin={admin}
             leaveRoom={leaveRoom}

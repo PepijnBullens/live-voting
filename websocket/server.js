@@ -14,21 +14,21 @@ const getMembers = (members) => {
 };
 
 const getTotalVotes = (socket) => {
-  const totalVotes = rooms[socket.room].answers.reduce(
-    (acc, answer) => acc + answer.votes.length,
+  const totalVotes = rooms[socket.room].options.reduce(
+    (acc, option) => acc + option.votes.length,
     0
   );
   return totalVotes;
 };
 
-const returnAnswerPercentage = (socket) => {
+const returnOptionPercentage = (socket) => {
   const totalVotes = getTotalVotes(socket);
 
-  const answersWithPercentage = rooms[socket.room].answers.map((answer) => ({
-    ...answer,
-    percentage: totalVotes > 0 ? (answer.votes.length / totalVotes) * 100 : 0,
+  const optionsWithPercentage = rooms[socket.room].options.map((option) => ({
+    ...option,
+    percentage: totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0,
   }));
-  return answersWithPercentage;
+  return optionsWithPercentage;
 };
 
 const votingComplete = async (socket) => {
@@ -40,7 +40,7 @@ const votingComplete = async (socket) => {
 };
 
 const getResult = async (socket) => {
-  const percentages = await returnAnswerPercentage(socket);
+  const percentages = await returnOptionPercentage(socket);
   const maxPercentage = Math.max(...percentages.map((p) => p.percentage));
   const winners = percentages.filter((p) => p.percentage === maxPercentage);
 
@@ -90,7 +90,7 @@ io.on("connection", (socket) => {
     if (isRoomNew) {
       rooms[room] = {
         id: nanoid(),
-        answers: [],
+        options: [],
         question: null,
         admin: socket.id,
         started: false,
@@ -120,7 +120,7 @@ io.on("connection", (socket) => {
     console.log(`User ${socket.id}/${username} joined room ${room}`);
   });
 
-  socket.on("answer-remove", (id) => {
+  socket.on("option-remove", (id) => {
     if (
       rooms[socket.room] &&
       rooms[socket.room].started &&
@@ -128,11 +128,11 @@ io.on("connection", (socket) => {
     )
       return;
 
-    rooms[socket.room].answers = rooms[socket.room].answers.filter(
-      (_answer) => _answer.id !== id
+    rooms[socket.room].options = rooms[socket.room].options.filter(
+      (_option) => _option.id !== id
     );
 
-    io.to(socket.room).emit("list-answers", returnAnswerPercentage(socket));
+    io.to(socket.room).emit("list-options", returnOptionPercentage(socket));
   });
 
   socket.on("room-start", () => {
@@ -144,7 +144,7 @@ io.on("connection", (socket) => {
     console.log(`Room: ${socket.room} has started`);
   });
 
-  socket.on("answers-update", (answer) => {
+  socket.on("options-update", (option) => {
     if (
       rooms[socket.room] &&
       rooms[socket.room].started &&
@@ -152,9 +152,10 @@ io.on("connection", (socket) => {
     )
       return;
 
-    const newAnswer = { id: nanoid(), content: answer, votes: [] };
-    rooms[socket.room].answers.push(newAnswer);
-    socket.emit("list-answers", returnAnswerPercentage(socket));
+    const newOption = { id: nanoid(), content: option, votes: [] };
+    rooms[socket.room].options.push(newOption);
+    io.to(socket.room).emit("list-options", returnOptionPercentage(socket));
+    socket.emit("list-options", returnOptionPercentage(socket));
   });
 
   socket.on("question-update", (question) => {
@@ -205,16 +206,16 @@ io.on("connection", (socket) => {
     const room = rooms[socket.room];
     if (!room) return;
 
-    room.answers.forEach((answer) => {
-      answer.votes = answer.votes.filter((vote) => vote.id !== socket.id);
+    room.options.forEach((option) => {
+      option.votes = option.votes.filter((vote) => vote.id !== socket.id);
     });
 
-    const answer = room.answers.find((answer) => answer.id === id);
-    if (answer) {
-      answer.votes.push({ id: socket.id, answer: true });
+    const option = room.options.find((option) => option.id === id);
+    if (option) {
+      option.votes.push({ id: socket.id, option: true });
     }
 
-    io.to(socket.room).emit("list-answers", returnAnswerPercentage(socket));
+    io.to(socket.room).emit("list-options", returnOptionPercentage(socket));
 
     const isComplete = await votingComplete(socket);
 

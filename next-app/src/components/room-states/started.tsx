@@ -4,7 +4,7 @@ interface Vote {
   id: string;
 }
 
-interface Answer {
+interface Option {
   id: string;
   content: string;
   percentage: number;
@@ -12,21 +12,21 @@ interface Answer {
 }
 
 export function UI({
-  answers,
+  options,
   question,
   vote,
 }: {
-  answers: Answer[];
+  options: Option[];
   question: string | null;
   vote: (id: string) => void;
 }) {
   return (
     <>
       <div>
-        {answers?.map((answer) => (
-          <div key={answer.id} onClick={() => vote(answer.id)}>
-            {answer.content}
-            {answer.percentage}
+        {options?.map((option) => (
+          <div key={option.id} onClick={() => vote(option.id)}>
+            {option.content}
+            {option.percentage}
           </div>
         ))}
       </div>
@@ -36,14 +36,14 @@ export function UI({
 }
 
 export default function Started({
-  answers,
+  options,
   question,
   vote,
   admin,
   endVoting,
   canEnd,
 }: {
-  answers: Answer[];
+  options: Option[];
   question: string | null;
   vote: (id: string) => void;
   admin: boolean;
@@ -52,12 +52,12 @@ export default function Started({
 }) {
   return admin ? (
     <>
-      <UI answers={answers} question={question} vote={vote} />
+      <UI options={options} question={question} vote={vote} />
       <button onClick={endVoting} disabled={!canEnd}>
         End Voting
       </button>
     </>
   ) : (
-    <UI answers={answers} question={question} vote={vote} />
+    <UI options={options} question={question} vote={vote} />
   );
 }

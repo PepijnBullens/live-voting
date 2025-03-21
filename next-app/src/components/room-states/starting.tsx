@@ -7,7 +7,7 @@ interface Vote {
   id: string;
 }
 
-interface Answer {
+interface Option {
   id: string;
   content: string;
   percentage: number;
@@ -17,11 +17,11 @@ interface Answer {
 export default function Starting({
   question,
   updateQuestion,
-  answers,
-  removeAnswer,
-  newAnswer,
-  setNewAnswer,
-  createNewAnswer,
+  options,
+  removeOption,
+  newOption,
+  setNewOption,
+  createNewOption,
   startRoom,
   admin,
   leaveRoom,
@@ -29,11 +29,11 @@ export default function Starting({
 }: {
   question: string | null;
   updateQuestion: (question: string) => void;
-  answers: Answer[];
-  removeAnswer: (id: string) => void;
-  newAnswer: string;
-  setNewAnswer: (id: string) => void;
-  createNewAnswer: () => void;
+  options: Option[];
+  removeOption: (id: string) => void;
+  newOption: string;
+  setNewOption: (id: string) => void;
+  createNewOption: () => void;
   startRoom: () => void;
   admin: boolean;
   leaveRoom: () => void;
@@ -41,13 +41,13 @@ export default function Starting({
 }) {
   const [copied, setCopied] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const answersRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkOverflow = () => {
-      if (answersRef.current) {
+      if (optionsRef.current) {
         setIsOverflowing(
-          answersRef.current.scrollHeight > answersRef.current.clientHeight
+          optionsRef.current.scrollHeight > optionsRef.current.clientHeight
         );
       }
     };
@@ -58,7 +58,7 @@ export default function Starting({
     return () => {
       window.removeEventListener("resize", checkOverflow);
     };
-  }, [answers]);
+  }, [options]);
 
   const copy = () => {
     navigator.clipboard.writeText(password || "");
@@ -98,39 +98,39 @@ export default function Starting({
                 <input
                   className="text-[#E5ECF4] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
                   placeholder="enter an option..."
-                  value={newAnswer || ""}
-                  onChange={(e) => setNewAnswer(e.target.value)}
+                  value={newOption || ""}
+                  onChange={(e) => setNewOption(e.target.value)}
                 />
                 <CirclePlus
                   size={14}
                   strokeWidth={3}
                   color="#E5ECF4"
-                  onClick={createNewAnswer}
+                  onClick={createNewOption}
                   className="cursor-pointer"
                 />
               </div>
               <div className="flex flex-col gap-2 flex-grow overflow-hidden relative">
                 <div
-                  ref={answersRef}
+                  ref={optionsRef}
                   className={`w-full h-full overflow-auto flex flex-col gap-2 ${
                     isOverflowing ? "pr-1" : ""
                   }`}
                 >
-                  {answers.length > 0 &&
-                    answers.map((answer) => (
+                  {options.length > 0 &&
+                    options.map((option) => (
                       <div
-                        key={answer.id}
+                        key={option.id}
                         className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3"
                       >
                         <p className="text-[#30323D] font-semibold p-3 text-sm">
-                          {answer.content}
+                          {option.content}
                         </p>
                         <CircleX
                           size={14}
                           strokeWidth={3}
                           color="#30323D"
                           className="cursor-pointer"
-                          onClick={() => removeAnswer(answer.id)}
+                          onClick={() => removeOption(option.id)}
                         />
                       </div>
                     ))}
@@ -195,41 +195,5 @@ export default function Starting({
       </Aside>
       <div>test</div>
     </MainLayout>
-  );
-
-  return admin ? (
-    <>
-      <input
-        type="text"
-        name="question"
-        id="question"
-        value={question || ""}
-        placeholder="question"
-        onChange={(e) => updateQuestion(e.target.value)}
-      />
-      <div>
-        {answers?.map((answer) => (
-          <div key={answer.id}>
-            {answer.content}
-            {answer.percentage}
-            <Delete onClick={() => removeAnswer(answer.id)} />
-          </div>
-        ))}
-      </div>
-      <input
-        type="text"
-        name="newAnswer"
-        id="newAnswer"
-        value={newAnswer || ""}
-        onChange={(e) => setNewAnswer(e.target.value)}
-      />
-      <button onClick={createNewAnswer}>New Answer</button>
-      <button onClick={startRoom}>Start Game</button>
-    </>
-  ) : (
-    <>
-      <p>The admin is setting up the room.</p>
-      <p>{question}</p>
-    </>
   );
 }

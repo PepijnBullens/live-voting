@@ -2,7 +2,7 @@ interface Vote {
   id: string;
 }
 
-interface Answer {
+interface Option {
   id: string;
   content: string;
   percentage: number;
@@ -13,7 +13,7 @@ export default function Ended({
   result,
   draw,
 }: {
-  result: Answer | null;
+  result: Option | null;
   draw: boolean;
 }) {
   return (
