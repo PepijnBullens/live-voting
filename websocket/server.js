@@ -184,6 +184,7 @@ io.on("connection", (socket) => {
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
+        client.emit("admin-left");
       });
     }
 
@@ -248,6 +249,7 @@ io.on("connection", (socket) => {
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
+        client.emit("admin-left");
       });
     }
 

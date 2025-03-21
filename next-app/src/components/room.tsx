@@ -113,7 +113,7 @@ export default function Room({
     });
 
     socket.on("admin-left", () => {
-      setRoom("");
+      showToast("warning", <p>Admin left the room...</p>);
     });
 
     socket.on("room-started", () => {

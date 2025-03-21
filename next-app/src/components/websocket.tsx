@@ -36,17 +36,15 @@ export default function Websocket() {
     };
   }, []);
 
-  return (
-    <>
-      {isConnected ? (
-        !room ? (
-          <JoinRoom socket={socket} setRoom={setRoom} rooms={rooms} />
-        ) : (
-          <Room socket={socket} room={room} setRoom={setRoom} />
-        )
-      ) : (
-        <h2>Connecting...</h2>
-      )}
-    </>
+  return isConnected ? (
+    !room ? (
+      <JoinRoom socket={socket} setRoom={setRoom} rooms={rooms} />
+    ) : (
+      <Room socket={socket} room={room} setRoom={setRoom} />
+    )
+  ) : (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <span className="loader"></span>
+    </div>
   );
 }
