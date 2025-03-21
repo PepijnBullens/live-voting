@@ -31,24 +31,26 @@ export default function SelectRoom({
         </h2>
         <div className="relative w-full h-full">
           <div className="w-full h-full overflow-auto">
-            {rooms.map((room) => (
-              <div
-                className={`w-full h-8 flex gap-2 items-center py-1 rounded cursor-pointer ${
-                  activeRoom?.id === room.id ? "bg-[#30323D] px-2" : ""
-                }`}
-                key={room.id}
-                onClick={() => changeActiveRoom(room)}
-              >
+            {rooms &&
+              rooms.length > 0 &&
+              rooms.map((room) => (
                 <div
-                  className={`h-4 aspect-square rounded-full  ${
-                    room.hasPassword ? "bg-[#F25757]" : "bg-[#69DC9E]"
+                  className={`w-full h-8 flex gap-2 items-center py-1 rounded cursor-pointer ${
+                    activeRoom?.id === room.id ? "bg-[#30323D] px-2" : ""
                   }`}
-                ></div>
-                <h3 className="uppercase font-semibold text-[#E5ECF4] overflow-ellipsis overflow-hidden">
-                  {room.name}
-                </h3>
-              </div>
-            ))}
+                  key={room.id}
+                  onClick={() => changeActiveRoom(room)}
+                >
+                  <div
+                    className={`h-4 aspect-square rounded-full  ${
+                      room.hasPassword ? "bg-[#F25757]" : "bg-[#69DC9E]"
+                    }`}
+                  ></div>
+                  <h3 className="uppercase font-semibold text-[#E5ECF4] overflow-ellipsis overflow-hidden">
+                    {room.name}
+                  </h3>
+                </div>
+              ))}
           </div>
           <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-t from-[#4D5061] to-transparent pointer-events-none"></div>
         </div>
@@ -79,7 +81,7 @@ export default function SelectRoom({
           <Lock size={14} strokeWidth={3} color="#797a81" />
         </div>
       )}
-      {rooms.length > 0 ? (
+      {rooms && rooms.length > 0 ? (
         <>
           <div
             className="bg-[#F25757] rounded flex gap-1 justify-center items-center cursor-pointer"

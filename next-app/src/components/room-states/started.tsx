@@ -23,12 +23,14 @@ export function UI({
   return (
     <>
       <div>
-        {options?.map((option) => (
-          <div key={option.id} onClick={() => vote(option.id)}>
-            {option.content}
-            {option.percentage}
-          </div>
-        ))}
+        {options &&
+          options.length > 0 &&
+          options.map((option) => (
+            <div key={option.id} onClick={() => vote(option.id)}>
+              {option.content}
+              {option.percentage}
+            </div>
+          ))}
       </div>
       <p>{question}</p>
     </>

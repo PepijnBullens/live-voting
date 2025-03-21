@@ -116,7 +116,8 @@ export default function Starting({
                     isOverflowing ? "pr-1" : ""
                   }`}
                 >
-                  {options.length > 0 &&
+                  {options &&
+                    options.length > 0 &&
                     options.map((option) => (
                       <div
                         key={option.id}
