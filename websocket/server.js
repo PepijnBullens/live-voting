@@ -183,6 +183,7 @@ io.on("connection", (socket) => {
     if (clients.length === 0) {
       delete rooms[room];
     } else if (rooms[room].admin === socket.id) {
+      delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
@@ -248,6 +249,7 @@ io.on("connection", (socket) => {
     if (clients.length === 0) {
       delete rooms[room];
     } else if (rooms[room].admin === socket.id) {
+      delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
