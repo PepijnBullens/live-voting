@@ -140,6 +140,8 @@ io.on("connection", (socket) => {
 
     rooms[socket.room].started = true;
     io.to(socket.room).emit("room-started");
+    io.to(socket.room).emit("list-options", returnOptionPercentage(socket));
+    socket.emit("list-options", returnOptionPercentage(socket));
 
     console.log(`Room: ${socket.room} has started`);
   });
