@@ -50,6 +50,9 @@ export default function Room({
 
   const [newOption, setNewOption] = useState("");
 
+  const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
+
   // ----------------- WEBSOCKET TO
 
   const leaveRoom = () => {
@@ -85,9 +88,33 @@ export default function Room({
     socket.emit("voting-end");
   };
 
+  const kick = (id: string) => {
+    socket.emit("kick", id, socket.id);
+  };
+
   // ----------------- WEBSOCKET FROM
 
   useEffect(() => {
+    if (error === null) return;
+    showToast("error", <p>{error}</p>);
+    setError(null);
+  }, [error]);
+
+  useEffect(() => {
+    if (warning === null) return;
+    showToast("warning", <p>{warning}</p>);
+    setWarning(null);
+  }, [warning]);
+
+  useEffect(() => {
+    socket.on("error", (message) => {
+      if (message !== error) setError(message);
+    });
+
+    socket.on("kicked", (message) => {
+      if (message !== error) setWarning(message);
+    });
+
     socket.on("list-password", (_password) => {
       setPassword(_password);
     });
@@ -160,15 +187,6 @@ export default function Room({
 
   return (
     <>
-      {/* <div>
-        <h1>Room: {room}</h1>
-        <button onClick={leaveRoom}>Leave Room</button>
-
-        <ul>
-          {members &&
-            members.map((member) => <li key={member.id}>{member.username}</li>)}
-        </ul>
-      </div> */}
       <div>
         {started && (
           <Started
@@ -193,6 +211,9 @@ export default function Room({
             admin={admin}
             leaveRoom={leaveRoom}
             password={password}
+            room={room}
+            members={members}
+            kick={kick}
           />
         )}
         {!started && ended && <Ended result={result} draw={draw} />}

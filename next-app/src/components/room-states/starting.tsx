@@ -1,4 +1,12 @@
-import { CircleHelp, Copy, Check, CirclePlus, CircleX } from "lucide-react";
+import {
+  CircleHelp,
+  Copy,
+  Check,
+  CirclePlus,
+  CircleX,
+  ChevronDown,
+  User,
+} from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import Aside from "@/components/aside/aside";
 import { useState, useEffect, useRef } from "react";
@@ -14,6 +22,11 @@ interface Option {
   votes: Vote[];
 }
 
+interface Member {
+  id: string;
+  username: string;
+}
+
 export default function Starting({
   question,
   updateQuestion,
@@ -26,6 +39,9 @@ export default function Starting({
   admin,
   leaveRoom,
   password,
+  room,
+  members,
+  kick,
 }: {
   question: string | null;
   updateQuestion: (question: string) => void;
@@ -38,9 +54,13 @@ export default function Starting({
   admin: boolean;
   leaveRoom: () => void;
   password: string | null;
+  room: string | null;
+  members: Member[] | null;
+  kick: (id: string) => void;
 }) {
   const [copied, setCopied] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -68,6 +88,10 @@ export default function Starting({
     setTimeout(() => {
       setCopied(false);
     }, 1000);
+  };
+
+  const toggleMembers = () => {
+    setShowMembers(!showMembers);
   };
 
   return (
@@ -194,7 +218,56 @@ export default function Starting({
           </div>
         )}
       </Aside>
-      <div>test</div>
+      <div className="w-full h-full flex justify-end items-end">
+        <div className="bg-[#4D5061] w-1/4 max-w-[332px] min-w-[290px] rounded-2xl p-6 z-100">
+          <div className={`min-h-[400px] ${showMembers ? "" : "hidden"}`}>
+            <ul className="flex flex-col gap-2">
+              {members &&
+                members.map((member) => (
+                  <li
+                    key={member.id}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex gap-2 items-center">
+                      <User color="#E5ECF4" strokeWidth={2.5} />
+                      <h2 className="text-[#E5ECF4] font-semibold">
+                        {member.username}
+                      </h2>
+                    </div>
+                    {admin ? (
+                      <h2
+                        onClick={() => kick(member.id)}
+                        className="uppercase px-4 rounded cursor-pointer py-2 bg-[#30323D] text-[#E5ECF4] font-semibold"
+                      >
+                        kick
+                      </h2>
+                    ) : null}
+                  </li>
+                ))}
+            </ul>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <h2
+                className="uppercase text-sm text-[#E5ECF4] font-semibold hover:underline cursor-pointer"
+                onClick={leaveRoom}
+              >
+                leave room
+              </h2>
+              <h3 className="uppercase text-xs text-[#E5ECF4] font-semibold opacity-50">
+                {room}
+              </h3>
+            </div>
+            <ChevronDown
+              color="#E5ECF4"
+              className={`cursor-pointer transition-all ${
+                showMembers ? "" : "rotate-180"
+              }`}
+              onClick={toggleMembers}
+            />
+          </div>
+        </div>
+      </div>
     </MainLayout>
   );
 }

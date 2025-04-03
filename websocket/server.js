@@ -120,6 +120,35 @@ io.on("connection", (socket) => {
     console.log(`User ${socket.id}/${username} joined room ${room}`);
   });
 
+  socket.on("kick", async (id, clientId) => {
+    if (rooms[socket.room]?.admin !== clientId) {
+      socket.emit("error", "Only the admin can kick users");
+      return;
+    }
+
+    if (rooms[socket.room]?.admin === id) {
+      socket.emit("error", "You are the admin. You can't be kicked");
+      return;
+    }
+
+    const clientToKick = (await io.in(socket.room).fetchSockets()).find(
+      (client) => client.id === id
+    );
+
+    if (clientToKick) {
+      clientToKick.leave(socket.room);
+      clientToKick.emit("kicked", "You have been removed from the room");
+      clientToKick.emit("left-room");
+      io.to(socket.room).emit(
+        "list-members",
+        getMembers(await io.in(socket.room).fetchSockets())
+      );
+      console.log(`User ${id} was kicked from room ${socket.room}`);
+    } else {
+      socket.emit("error", "User not found in the room");
+    }
+  });
+
   socket.on("option-remove", (id) => {
     if (
       rooms[socket.room] &&
@@ -180,9 +209,8 @@ io.on("connection", (socket) => {
     delete socket.room;
 
     const clients = await io.in(room).fetchSockets();
-    if (clients.length === 0) {
-      delete rooms[room];
-    } else if (rooms[room].admin === socket.id) {
+
+    if (clients.length === 0 || rooms[room].admin === socket.id) {
       delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
@@ -242,13 +270,14 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", async () => {
     if (!socket.room) return;
+
     const room = socket.room;
     socket.leave(room);
+    delete socket.room;
 
     const clients = await io.in(room).fetchSockets();
-    if (clients.length === 0) {
-      delete rooms[room];
-    } else if (rooms[room].admin === socket.id) {
+
+    if (clients.length === 0 || rooms[room].admin === socket.id) {
       delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
