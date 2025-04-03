@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
 
     if (clientToKick) {
       clientToKick.leave(socket.room);
-      clientToKick.emit("kicked", "You have been removed from the room");
+      clientToKick.emit("warning", "You have been removed from the room");
       clientToKick.emit("left-room");
       io.to(socket.room).emit(
         "list-members",

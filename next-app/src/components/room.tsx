@@ -111,7 +111,7 @@ export default function Room({
       if (message !== error) setError(message);
     });
 
-    socket.on("kicked", (message) => {
+    socket.on("warning", (message) => {
       if (message !== error) setWarning(message);
     });
 
