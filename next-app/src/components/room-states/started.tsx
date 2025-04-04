@@ -1,8 +1,7 @@
-import { ChevronDown, User } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import Voting from "@/components/aside/voting";
-import { useState } from "react";
 import Members from "@/components/members";
+import { useState } from "react";
 
 interface Vote {
   id: string;
@@ -57,6 +56,7 @@ export default function Started({
   kick,
   leaveRoom,
   room,
+  currentVote,
 }: {
   options: Option[];
   question: string | null;
@@ -68,13 +68,8 @@ export default function Started({
   kick: (id: string) => void;
   leaveRoom: () => void;
   room: string | null;
+  currentVote: Vote | null;
 }) {
-  const [showMembers, setShowMembers] = useState(false);
-
-  const toggleMembers = () => {
-    setShowMembers(!showMembers);
-  };
-
   return (
     <MainLayout>
       <Voting
@@ -84,6 +79,7 @@ export default function Started({
         endVoting={endVoting}
         canEnd={canEnd}
         admin={admin}
+        currentVote={currentVote}
       />
       <Members
         members={members}

@@ -1,3 +1,6 @@
+import { motion, useSpring, useTransform } from "framer-motion";
+import { useEffect } from "react";
+
 interface Vote {
   id: string;
 }
@@ -9,6 +12,19 @@ interface Option {
   votes: Vote[];
 }
 
+function AnimatedNumber({ value }: { value: number }) {
+  let spring = useSpring(value, { mass: 0.8, stiffness: 75, damping: 15 });
+  let display = useTransform(spring, (current) =>
+    Math.round(current).toLocaleString()
+  );
+
+  useEffect(() => {
+    spring.set(value);
+  }, [spring, value]);
+
+  return <motion.span>{display}</motion.span>;
+}
+
 export default function Voting({
   options,
   question,
@@ -16,6 +32,7 @@ export default function Voting({
   endVoting,
   canEnd,
   admin,
+  currentVote,
 }: {
   options: Option[];
   question: string | null;
@@ -23,6 +40,7 @@ export default function Voting({
   endVoting: () => void;
   canEnd: boolean;
   admin: boolean;
+  currentVote: Vote | null;
 }) {
   return (
     <div className="w-full flex-grow z-100 flex flex-col gap-4 justify-end">
@@ -41,10 +59,12 @@ export default function Voting({
               ["bg-[#E8C547]", "bg-[#F25757]", "bg-[#5C80BC]", "bg-[#69DC9E]"][
                 index % 4
               ]
+            } ${
+              currentVote && option.id !== currentVote.id ? "opacity-40" : ""
             }`}
           >
             <div className="text-white absolute md:bottom-4 lg:bottom-4 left-4 rounded-2xl flex justify-center items-center">
-              {option.percentage}%
+              <AnimatedNumber value={option.percentage} />%
             </div>
             <h2 className="text-white font-semibold text-2xl [font-size:_clamp(1.2rem,2.2vw,1.8rem)]">
               {option.content}

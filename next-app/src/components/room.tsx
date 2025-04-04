@@ -53,6 +53,8 @@ export default function Room({
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
 
+  const [currentVote, setCurrentVote] = useState<Vote | null>(null);
+
   // ----------------- WEBSOCKET TO
 
   const leaveRoom = () => {
@@ -82,6 +84,7 @@ export default function Room({
 
   const vote = (id: string) => {
     socket.emit("vote", id);
+    setCurrentVote({ id });
   };
 
   const endVoting = () => {
@@ -200,6 +203,7 @@ export default function Room({
             kick={kick}
             leaveRoom={leaveRoom}
             room={room}
+            currentVote={currentVote}
           />
         )}
         {!started && !ended && (
