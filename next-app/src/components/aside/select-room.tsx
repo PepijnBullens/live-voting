@@ -24,8 +24,8 @@ export default function SelectRoom({
   setPassword: (state: string | null) => void;
 }) {
   return (
-    <div className="w-full h-full flex flex-col justify-between gap-2">
-      <div className="w-full flex grow flex-col">
+    <div className="w-full h-full flex-grow flex flex-col gap-2">
+      <div className="w-full flex flex-col flex-grow">
         <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-2">
           join a room
         </h2>
@@ -58,7 +58,7 @@ export default function SelectRoom({
       {activeRoom && (
         <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
           <input
-            className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+            className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
             type="text"
             name="username"
             id="username"
@@ -71,7 +71,7 @@ export default function SelectRoom({
       {activeRoom && activeRoom.hasPassword && (
         <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
           <input
-            className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+            className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
             type="password"
             name="password"
             id="password"
@@ -98,7 +98,7 @@ export default function SelectRoom({
         </>
       ) : (
         <>
-          <h2 className="uppercase font-semibold text-[#E5ECF4] w-full h-full flex justify-center items-center">
+          <h2 className="uppercase font-semibold flex-grow text-[#E5ECF4] w-full h-full flex justify-center items-center">
             No active rooms
           </h2>
           <p className="w-full border-b-1 relative text-[#E5ECF4] my-4"></p>

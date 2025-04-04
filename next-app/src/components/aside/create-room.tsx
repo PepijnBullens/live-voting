@@ -14,15 +14,15 @@ export default function CreateRoom({
   setPassword: (state: string | null) => void;
 }) {
   return (
-    <div className="w-full h-full flex flex-col justify-between gap-2">
-      <div className="w-full flex grow flex-col">
+    <div className="w-full h-full flex-grow flex flex-col justify-between gap-2">
+      <div className="w-full flex flex-grow flex-col">
         <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-2">
           create a room
         </h2>
       </div>
       <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
         <input
-          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
           type="text"
           name="roomName"
           id="roomName"
@@ -33,7 +33,7 @@ export default function CreateRoom({
       </div>
       <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
         <input
-          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
           type="text"
           name="username"
           id="username"
@@ -44,7 +44,7 @@ export default function CreateRoom({
       </div>
       <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
         <input
-          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+          className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
           type="password"
           name="password"
           id="password"

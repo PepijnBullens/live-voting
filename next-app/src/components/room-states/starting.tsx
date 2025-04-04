@@ -1,14 +1,7 @@
-import {
-  CircleHelp,
-  Copy,
-  Check,
-  CirclePlus,
-  CircleX,
-  ChevronDown,
-  User,
-} from "lucide-react";
+import { CircleHelp, Copy, Check, CirclePlus, CircleX } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import Aside from "@/components/aside/aside";
+import Members from "@/components/members";
 import { useState, useEffect, useRef } from "react";
 
 interface Vote {
@@ -60,7 +53,6 @@ export default function Starting({
 }) {
   const [copied, setCopied] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const [showMembers, setShowMembers] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -90,15 +82,11 @@ export default function Starting({
     }, 1000);
   };
 
-  const toggleMembers = () => {
-    setShowMembers(!showMembers);
-  };
-
   return (
     <MainLayout>
       <Aside>
         {admin ? (
-          <div className="w-full h-full flex flex-col justify-between gap-2">
+          <div className="w-full h-full flex flex-col flex-grow justify-between gap-2">
             <div className="flex flex-col gap-2 overflow-hidden">
               <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-2">
                 set up room
@@ -120,7 +108,7 @@ export default function Starting({
               )}
               <div className="bg-[#30323D] rounded flex gap-1 justify-between items-center pr-3">
                 <input
-                  className="text-[#E5ECF4] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+                  className="text-[#E5ECF4] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
                   placeholder="enter an option..."
                   value={newOption || ""}
                   onChange={(e) => setNewOption(e.target.value)}
@@ -165,10 +153,10 @@ export default function Starting({
                 )}
               </div>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-8">
               <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
                 <input
-                  className="text-[#30323D] placeholder:text-[#797a81] placeholder:uppercase font-semibold p-3 text-sm outline-0"
+                  className="text-[#30323D] placeholder:text-[#797a81] w-full placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
                   type="text"
                   name="question"
                   id="question"
@@ -218,56 +206,13 @@ export default function Starting({
           </div>
         )}
       </Aside>
-      <div className="w-full h-full flex justify-end items-end">
-        <div className="bg-[#4D5061] w-1/4 max-w-[332px] min-w-[400px] rounded-2xl p-6 z-100">
-          <div className={`mb-8 ${showMembers ? "" : "hidden"}`}>
-            <ul className="flex flex-col gap-2">
-              {members &&
-                members.map((member) => (
-                  <li
-                    key={member.id}
-                    className="flex justify-between items-center"
-                  >
-                    <div className="flex gap-2 items-center">
-                      <User color="#E5ECF4" strokeWidth={2.5} />
-                      <h2 className="text-[#E5ECF4] font-semibold">
-                        {member.username}
-                      </h2>
-                    </div>
-                    {admin ? (
-                      <h2
-                        onClick={() => kick(member.id)}
-                        className="uppercase px-4 rounded cursor-pointer py-2 bg-[#30323D] text-[#E5ECF4] font-semibold"
-                      >
-                        kick
-                      </h2>
-                    ) : null}
-                  </li>
-                ))}
-            </ul>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <h2
-                className="uppercase text-sm text-[#E5ECF4] font-semibold hover:underline cursor-pointer"
-                onClick={leaveRoom}
-              >
-                leave room
-              </h2>
-              <h3 className="uppercase text-xs text-[#E5ECF4] font-semibold opacity-50">
-                {room}
-              </h3>
-            </div>
-            <ChevronDown
-              color="#E5ECF4"
-              className={`cursor-pointer transition-all ${
-                showMembers ? "" : "rotate-180"
-              }`}
-              onClick={toggleMembers}
-            />
-          </div>
-        </div>
-      </div>
+      <Members
+        members={members}
+        admin={admin}
+        leaveRoom={leaveRoom}
+        room={room}
+        kick={kick}
+      />
     </MainLayout>
   );
 }

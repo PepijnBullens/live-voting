@@ -25,9 +25,9 @@ export default function Voting({
   admin: boolean;
 }) {
   return (
-    <div className="w-full h-full z-100 flex flex-col gap-6">
+    <div className="w-full flex-grow z-100 flex flex-col gap-4 justify-end">
       <div
-        className={`p-6 bg-[#4D5061] h-5/6 rounded-2xl ${
+        className={`p-6 flex-grow bg-[#4D5061] rounded-2xl ${
           options.length > 1 ? "grid grid-cols-1 lg:grid-cols-2" : ""
         } gap-4`}
       >
@@ -43,32 +43,32 @@ export default function Voting({
               ]
             }`}
           >
-            <div className="text-white absolute bottom-4 left-4 rounded-2xl flex justify-center items-center">
+            <div className="text-white absolute md:bottom-4 lg:bottom-4 left-4 rounded-2xl flex justify-center items-center">
               {option.percentage}%
             </div>
-            <h2 className="text-white font-semibold text-2xl">
+            <h2 className="text-white font-semibold text-2xl [font-size:_clamp(1.2rem,2.2vw,1.8rem)]">
               {option.content}
             </h2>
           </div>
         ))}
       </div>
       {admin ? (
-        <div className="flex gap-6 w-full h-1/6">
+        <div className="flex flex-col justify-end md:mb-0 mb-8 lg:flex-row gap-4 w-full">
           <button
-            className="uppercase px-4 rounded-2xl cursor-pointer py-2 bg-[#30323D] text-[#E5ECF4] font-semibold disabled:opacity-35 disabled:cursor-not-allowed"
+            className="[font-size:_clamp(0.8rem,1.2vw,1rem)] uppercase px-4 rounded-2xl cursor-pointer py-4 bg-[#4D5061] text-[#E5ECF4] font-semibold disabled:opacity-35 disabled:cursor-not-allowed"
             onClick={endVoting}
             disabled={!canEnd}
           >
             End Voting
           </button>
-          <div className="p-6 bg-[#4D5061] h-full w-full rounded-2xl flex justify-center items-center">
-            <h2 className="text-[#E5ECF4] font-semibold text-2xl">
+          <div className="p-6 bg-[#4D5061] w-full rounded-2xl flex justify-center items-center h-22">
+            <h2 className="[font-size:_clamp(1rem,1.6vw,1.6rem)] text-[#E5ECF4] font-semibold text-2xl">
               {question}
             </h2>
           </div>
         </div>
       ) : (
-        <div className="p-6 bg-[#4D5061] h-1/6 rounded-2xl flex justify-center items-center">
+        <div className="p-6 bg-[#4D5061] rounded-2xl flex justify-center items-center h-22">
           <h2 className="text-[#E5ECF4] font-semibold text-2xl">{question}</h2>
         </div>
       )}
