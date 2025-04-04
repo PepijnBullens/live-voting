@@ -193,9 +193,13 @@ export default function Room({
             options={options}
             question={question}
             vote={vote}
-            endVoting={endVoting}
             admin={admin}
+            endVoting={endVoting}
             canEnd={canEnd}
+            members={members}
+            kick={kick}
+            leaveRoom={leaveRoom}
+            room={room}
           />
         )}
         {!started && !ended && (
