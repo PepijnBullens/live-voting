@@ -53,7 +53,7 @@ export default function Voting({
           <div
             onClick={() => vote(option.id)}
             key={option.id}
-            className={`${
+            className={`transition-all ${
               options.length === 1 ? "w-full h-full" : ""
             } cursor-pointer relative flex justify-center items-center text-white p-4 rounded-lg text-center font-semibold ${
               ["bg-[#E8C547]", "bg-[#F25757]", "bg-[#5C80BC]", "bg-[#69DC9E]"][
