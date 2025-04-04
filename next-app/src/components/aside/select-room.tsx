@@ -25,11 +25,15 @@ export default function SelectRoom({
 }) {
   return (
     <div className="w-full h-full flex-grow flex flex-col gap-2">
-      <div className="w-full flex flex-col flex-grow">
+      <div
+        className={`w-full flex flex-col ${
+          rooms && rooms.length > 0 ? "flex-grow" : ""
+        }`}
+      >
         <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-2">
           join a room
         </h2>
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full flex-grow">
           <div className="w-full h-full overflow-auto">
             {rooms &&
               rooms.length > 0 &&

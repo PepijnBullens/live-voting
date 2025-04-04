@@ -95,24 +95,24 @@ export default function Room({
   // ----------------- WEBSOCKET FROM
 
   useEffect(() => {
-    if (error === null) return;
-    showToast("error", <p>{error}</p>);
-    setError(null);
-  }, [error]);
+    if (warning !== null) {
+      showToast("warning", <p>{warning}</p>);
+      setWarning(null);
+    }
 
-  useEffect(() => {
-    if (warning === null) return;
-    showToast("warning", <p>{warning}</p>);
-    setWarning(null);
-  }, [warning]);
+    if (error !== null) {
+      showToast("error", <p>{error}</p>);
+      setError(null);
+    }
+  }, [warning, error]);
 
   useEffect(() => {
     socket.on("error", (message) => {
       if (message !== error) setError(message);
     });
 
-    socket.on("warning", (message) => {
-      if (message !== error) setWarning(message);
+    socket.on("kicked", (message) => {
+      if (message !== warning) setWarning(message);
     });
 
     socket.on("list-password", (_password) => {

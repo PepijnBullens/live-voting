@@ -156,7 +156,7 @@ export default function Starting({
             <div className="flex flex-col gap-2 mt-8">
               <div className="bg-[#E5ECF4] rounded flex gap-1 justify-between items-center pr-3">
                 <input
-                  className="text-[#30323D] placeholder:text-[#797a81] w-full placeholder:uppercase font-semibold p-3 text-sm outline-0 w-full"
+                  className="text-[#30323D] placeholder:text-[#797a81] w-full placeholder:uppercase font-semibold p-3 text-sm outline-0"
                   type="text"
                   name="question"
                   id="question"
@@ -179,11 +179,11 @@ export default function Starting({
             </div>
           </div>
         ) : (
-          <div className="w-full h-full flex flex-col justify-end gap-2">
+          <div className="w-full h-full flex flex-col gap-2 flex-grow">
             <h2 className="uppercase font-semibold border-b-1 text-[#E5ECF4] pb-1 mb-2">
               setting up room
             </h2>
-            <h2 className="uppercase font-semibold text-[#E5ECF4] w-full h-full flex justify-center items-center">
+            <h2 className="uppercase font-semibold text-[#E5ECF4] flex-grow w-full h-full flex justify-center items-center">
               Wait for admin
             </h2>
             <div>
