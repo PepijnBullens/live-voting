@@ -84,12 +84,14 @@ export default function JoinRoom({
           />
         )}
       </Aside>
-      <p className="order-1 w-full mt-8 md:mt-0 md:w-1/2 text-[#4D5061] text-xl z-100 mix-blend-difference [font-size:_clamp(1rem,1.6vw,1.6rem)]">
-        <span className="uppercase font-bold">pollparty</span> is a live-vote
-        discussion platform designed to make difficult decisions—like choosing
-        which movie to watch with 10 people—super easy. Just create a room or
-        join a friend's room and start voting!
-      </p>
+      <div className="order-1 w-full pr-24">
+        <p className="w-full mt-8 md:mt-0 text-[#4D5061] text-xl z-100 mix-blend-difference [font-size:_clamp(1rem,1.6vw,1.6rem)]">
+          <span className="uppercase font-bold">pollparty</span> is a live-vote
+          discussion platform designed to make difficult decisions—like choosing
+          which movie to watch with 10 people—super easy. Just create a room or
+          join a friend's room and start voting!
+        </p>
+      </div>
     </MainLayout>
   );
 }

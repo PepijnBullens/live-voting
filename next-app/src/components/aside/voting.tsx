@@ -63,7 +63,11 @@ export default function Voting({
               currentVote && option.id !== currentVote.id ? "opacity-40" : ""
             }`}
           >
-            <div className="text-white absolute md:bottom-4 lg:bottom-4 left-4 rounded-2xl flex justify-center items-center">
+            <div
+              className={`text-white absolute ${
+                options.length > 3 ? "md:bottom-4 lg:bottom-4" : "bottom-4"
+              } left-4 rounded-2xl flex justify-center items-center`}
+            >
               <AnimatedNumber value={option.percentage} />%
             </div>
             <h2 className="text-white font-semibold text-2xl [font-size:_clamp(1.2rem,2.2vw,1.8rem)]">
@@ -74,17 +78,17 @@ export default function Voting({
       </div>
       {admin ? (
         <div className="flex flex-col justify-end md:mb-0 mb-8 lg:flex-row gap-4 w-full">
-          <button
-            className="[font-size:_clamp(0.8rem,1.2vw,1rem)] uppercase px-4 rounded-2xl cursor-pointer py-4 bg-[#4D5061] text-[#E5ECF4] font-semibold disabled:opacity-35 disabled:cursor-not-allowed"
-            onClick={endVoting}
-            disabled={!canEnd}
-          >
-            End Voting
-          </button>
-          <div className="p-6 bg-[#4D5061] w-full rounded-2xl flex justify-center items-center h-22">
+          <div className="p-6 bg-[#4D5061] w-full rounded-2xl flex flex-col justify-center items-center gap-8">
             <h2 className="[font-size:_clamp(1rem,1.6vw,1.6rem)] text-[#E5ECF4] font-semibold text-2xl">
               {question}
             </h2>
+            <button
+              className="[font-size:_clamp(0.8rem,1.2vw,1rem)] w-full py-4 uppercase rounded-xl cursor-pointer bg-[#E5ECF4] text-[#4D5061] font-semibold disabled:opacity-10 disabled:cursor-not-allowed"
+              onClick={endVoting}
+              disabled={!canEnd}
+            >
+              End Voting
+            </button>
           </div>
         </div>
       ) : (
