@@ -43,10 +43,10 @@ export default function Voting({
   currentVote: Vote | null;
 }) {
   return (
-    <div className="w-full flex-grow z-100 flex flex-col gap-4 justify-end">
+    <div className="w-full flex-grow z-100 flex flex-col gap-4 justify-end max-h-[calc(100vh-128px-32px)]">
       <div
-        className={`p-6 flex-grow bg-[#4D5061] rounded-2xl ${
-          options.length > 1 ? "grid grid-cols-1 lg:grid-cols-2" : ""
+        className={`p-6 flex-grow bg-[#4D5061] rounded-2xl grid grid-cols-1 ${
+          options.length > 1 ? "lg:grid-cols-2" : ""
         } gap-4`}
       >
         {options.map((option, index) => (
@@ -54,7 +54,7 @@ export default function Voting({
             onClick={() => vote(option.id)}
             key={option.id}
             className={`transition-all ${
-              options.length === 1 ? "w-full h-full" : ""
+              options.length == 1 ? "w-full h-full" : ""
             } cursor-pointer relative flex justify-center items-center text-white p-4 rounded-lg text-center font-semibold ${
               ["bg-[#E8C547]", "bg-[#F25757]", "bg-[#5C80BC]", "bg-[#69DC9E]"][
                 index % 4
@@ -83,7 +83,7 @@ export default function Voting({
               {question}
             </h2>
             <button
-              className="[font-size:_clamp(0.8rem,1.2vw,1rem)] w-full py-4 uppercase rounded-xl cursor-pointer bg-[#E5ECF4] text-[#4D5061] font-semibold disabled:opacity-10 disabled:cursor-not-allowed"
+              className="[font-size:_clamp(0.8rem,1.2vw,1rem)] w-full py-4 uppercase rounded-lg cursor-pointer bg-[#E5ECF4] text-[#4D5061] font-semibold disabled:opacity-10 disabled:cursor-not-allowed"
               onClick={endVoting}
               disabled={!canEnd}
             >

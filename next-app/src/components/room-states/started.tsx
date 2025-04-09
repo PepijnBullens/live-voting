@@ -1,7 +1,7 @@
 import MainLayout from "@/layouts/main-layout";
 import Voting from "@/components/aside/voting";
 import Members from "@/components/members";
-import { useState } from "react";
+import ChatComponent from "@/components/chat";
 
 interface Vote {
   id: string;
@@ -19,30 +19,11 @@ interface Member {
   username: string;
 }
 
-export function UI({
-  options,
-  question,
-  vote,
-}: {
-  options: Option[];
-  question: string | null;
-  vote: (id: string) => void;
-}) {
-  return (
-    <>
-      <div>
-        {options &&
-          options.length > 0 &&
-          options.map((option) => (
-            <div key={option.id} onClick={() => vote(option.id)}>
-              {option.content}
-              {option.percentage}
-            </div>
-          ))}
-      </div>
-      <p>{question}</p>
-    </>
-  );
+interface ChatType {
+  id: string;
+  username: string;
+  userid: string;
+  content: string;
 }
 
 export default function Started({
@@ -57,6 +38,9 @@ export default function Started({
   leaveRoom,
   room,
   currentVote,
+  sendChat,
+  chats,
+  socketId,
 }: {
   options: Option[];
   question: string | null;
@@ -69,6 +53,9 @@ export default function Started({
   leaveRoom: () => void;
   room: string | null;
   currentVote: Vote | null;
+  sendChat: (message: string) => void;
+  chats: ChatType[] | null;
+  socketId: string | null;
 }) {
   return (
     <MainLayout>
@@ -81,13 +68,17 @@ export default function Started({
         admin={admin}
         currentVote={currentVote}
       />
-      <Members
-        members={members}
-        admin={admin}
-        leaveRoom={leaveRoom}
-        room={room}
-        kick={kick}
-      />
+
+      <div className="flex justify-end flex-col order-2 gap-4 max-h-[calc(100vh-128px-32px)]">
+        <ChatComponent chats={chats} sendChat={sendChat} socketId={socketId} />
+        <Members
+          members={members}
+          admin={admin}
+          leaveRoom={leaveRoom}
+          room={room}
+          kick={kick}
+        />
+      </div>
     </MainLayout>
   );
 }

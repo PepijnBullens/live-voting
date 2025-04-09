@@ -65,6 +65,20 @@ io.on("connection", (socket) => {
     }))
   );
 
+  socket.on("send-chat", (message) => {
+    if (!rooms[socket.room].messages) {
+      rooms[socket.room].messages = [];
+    }
+    rooms[socket.room].messages = {
+      id: nanoid(),
+      username: socket.username,
+      userid: socket.id,
+      content: message,
+    };
+    socket.to(socket.room).emit("receive-message", rooms[socket.room].messages);
+    socket.emit("receive-message", rooms[socket.room].messages);
+  });
+
   socket.on("join-room", async (room, username, password) => {
     if (
       rooms[room] &&
@@ -95,6 +109,7 @@ io.on("connection", (socket) => {
         admin: socket.id,
         started: false,
         password: password || null,
+        messages: [],
       };
     }
 

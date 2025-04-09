@@ -1,15 +1,5 @@
-import {
-  CircleHelp,
-  Copy,
-  Check,
-  CirclePlus,
-  CircleX,
-  ChevronDown,
-  User,
-} from "lucide-react";
-import MainLayout from "@/layouts/main-layout";
-import Aside from "@/components/aside/aside";
-import { useState, useEffect, useRef } from "react";
+import { ChevronDown, User } from "lucide-react";
+import { useState } from "react";
 
 interface Vote {
   id: string;
@@ -49,7 +39,7 @@ export default function Members({
   return (
     <div className="flex justify-end items-end order-2">
       <div
-        className={`bg-[#4D5061] w-full md:w-1/4 md:max-w-[332px] md:min-w-[340px] rounded-2xl p-6 z-100 flex flex-col justify-center  items-center ${
+        className={`bg-[#4D5061] w-full md:w-1/4 md:max-w-[332px] md:min-w-[400px] rounded-2xl p-6 z-100 flex flex-col justify-center  items-center ${
           showMembers ? "" : "h-22"
         }`}
       >

@@ -23,6 +23,13 @@ interface Option {
   votes: Vote[];
 }
 
+interface ChatType {
+  id: string;
+  username: string;
+  userid: string;
+  content: string;
+}
+
 export default function Room({
   socket,
   room,
@@ -55,7 +62,13 @@ export default function Room({
 
   const [currentVote, setCurrentVote] = useState<Vote | null>(null);
 
+  const [chats, setChats] = useState<ChatType[] | null>(null);
+
   // ----------------- WEBSOCKET TO
+
+  const sendChat = (message: string) => {
+    socket.emit("send-chat", message);
+  };
 
   const leaveRoom = () => {
     socket.emit("leave-room");
@@ -110,6 +123,10 @@ export default function Room({
   }, [warning, error]);
 
   useEffect(() => {
+    socket.on("receive-message", (message) => {
+      setChats((prev) => (prev ? [...prev, message] : [message]));
+    });
+
     socket.on("error", (message) => {
       if (message !== error) setError(message);
     });
@@ -162,6 +179,9 @@ export default function Room({
     });
 
     return () => {
+      socket.off("receive-message");
+      socket.off("error");
+      socket.off("kicked");
       socket.off("list-password");
       socket.off("left-room");
       socket.off("list-members");
@@ -186,6 +206,7 @@ export default function Room({
     setResult,
     setDraw,
     setCanEnd,
+    setChats,
   ]);
 
   return (
@@ -204,6 +225,9 @@ export default function Room({
             leaveRoom={leaveRoom}
             room={room}
             currentVote={currentVote}
+            sendChat={sendChat}
+            chats={chats}
+            socketId={socket.id || null}
           />
         )}
         {!started && !ended && (
