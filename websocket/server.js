@@ -226,12 +226,12 @@ io.on("connection", (socket) => {
     const clients = await io.in(room).fetchSockets();
 
     if (clients.length === 0 || rooms[room].admin === socket.id) {
-      delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
         client.emit("admin-left");
       });
+      delete rooms[room];
     }
 
     socket.emit("left-room");
@@ -293,12 +293,12 @@ io.on("connection", (socket) => {
     const clients = await io.in(room).fetchSockets();
 
     if (clients.length === 0 || rooms[room].admin === socket.id) {
-      delete rooms[room];
       clients.forEach((client) => {
         client.leave(room);
         client.emit("left-room");
         client.emit("admin-left");
       });
+      delete rooms[room];
     }
 
     io.to(room).emit("list-members", getMembers(clients));
