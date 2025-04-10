@@ -248,7 +248,9 @@ export default function Room({
             kick={kick}
           />
         )}
-        {!started && ended && <Ended result={result} draw={draw} />}
+        {!started && ended && (
+          <Ended result={result} leaveRoom={leaveRoom} draw={draw} />
+        )}
       </div>
     </>
   );
