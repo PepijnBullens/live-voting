@@ -1,5 +1,8 @@
 # live-voting
 
+### Repo
+`https://github.com/PepijnBullens/live-voting`
+
 ### Installation
 
 1. `cd websocket`
